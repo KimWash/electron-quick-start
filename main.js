@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
+const os = require('os')
 
 function createStickerWindow() {
   // Create the browser window.
@@ -16,9 +17,9 @@ function createStickerWindow() {
     useContentSize: true,
     roundedCorners: false,
   })
-  stickerWindow.setWindowButtonVisibility(false)
+  stickerWindow.setAlwaysOnTop(true, 'screen')
   stickerWindow.minimize()
-
+  if (os.type() == 'Darwin') stickerWindow.setWindowButtonVisibility(true)
   // and load the index.html of the app.
   stickerWindow.loadFile('sticker/index.html')
 
@@ -37,7 +38,7 @@ function createWindow() {
     },
     title: "H4Pay POS"
   })
-
+  
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
@@ -53,6 +54,9 @@ function setEvents(stickerWindow, mainWindow) {
   })
   mainWindow.on("minimize", (param) => {
     stickerWindow.restore()
+  })
+  mainWindow.on("close", () => {
+    app.quit()
   })
 
 }
