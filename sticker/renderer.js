@@ -6,9 +6,7 @@
 // process.
 
 function onImageClick() {
-  console.log("image clicked");
-  const childWindow = window.open("", "modal");
-  childWindow.document.write("<h1>Hello</h1>");
+  window.electronAPI.openMain();
 }
 
 document.querySelector("#logo").addEventListener("click", () => { onImageClick() })

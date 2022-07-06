@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="draggable" >
   <head>
     <meta charset="UTF-8" />
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
@@ -11,7 +11,13 @@
     <title>Hello World!</title>
   </head>
   <body>
-    HI!
+    <img
+      id="logo"
+      src="./assets/logo.png"
+      style="width: 100px;"
+      draggable="false"
+    />
+
     <!-- You can also require other files to run in this process -->
     <script src="./renderer.js"></script>
   </body>

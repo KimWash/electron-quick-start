@@ -1,15 +1,41 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 
-function createWindow () {
+function createStickerWindow() {
+  // Create the browser window.
+  const stickerWindow = new BrowserWindow({
+    width: 150,
+    height: 150,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    },
+    frame: false,
+    titleBarStyle: "hidden",
+    resizable: false,
+    useContentSize: true,
+    roundedCorners: false,
+  })
+  stickerWindow.setWindowButtonVisibility(false)
+  stickerWindow.minimize()
+
+  // and load the index.html of the app.
+  stickerWindow.loadFile('sticker/index.html')
+
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
+  return stickerWindow
+}
+
+function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
-    }
+    },
+    title: "H4Pay POS"
   })
 
   // and load the index.html of the app.
@@ -17,18 +43,37 @@ function createWindow () {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
+  return mainWindow
+}
+
+function setEvents(stickerWindow, mainWindow) {
+  ipcMain.on('open-main', () => {
+    stickerWindow.minimize()
+    mainWindow.restore()
+  })
+  mainWindow.on("minimize", (param) => {
+    stickerWindow.restore()
+  })
+
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow()
+  const stickerWindow = createStickerWindow()
+  const mainWindow = createWindow()
+  setEvents(stickerWindow, mainWindow)
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) {
+      const stickerWindow = createStickerWindow()
+      const mainWindow = createWindow()
+      setEvents(stickerWindow, mainWindow)
+
+    }
   })
 })
 
